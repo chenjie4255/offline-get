@@ -27,7 +27,8 @@ func TestDownloadMission(t *testing.T) {
 		var savePath = "/tmp/ccc"
 		Convey("download from a valid url", func() {
 			mission := newMission(testURL, savePath)
-			err := mission.start()
+			mission.start()
+			err := mission.wait()
 			So(err, ShouldBeNil)
 
 			Convey("check file size", func() {
@@ -39,7 +40,9 @@ func TestDownloadMission(t *testing.T) {
 		Convey("redownload from a invalid url and save it to a same file", func() {
 			var invalidURL = "https://pokemongocannotployinchina.com/xx.img"
 			mission := newMission(invalidURL, savePath)
-			err := mission.start()
+			mission.start()
+			err := mission.wait()
+
 			So(err, ShouldNotBeNil)
 
 			Convey("check file size", func() {

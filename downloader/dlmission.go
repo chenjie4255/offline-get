@@ -12,10 +12,12 @@ import (
 type mission struct {
 	url      string
 	filePath string
+	end      chan bool
+	err      error
 }
 
 func newMission(url, filePath string) *mission {
-	return &mission{url, filePath}
+	return &mission{url, filePath, make(chan bool), nil}
 }
 
 func download(url, savePath string) error {
@@ -41,19 +43,26 @@ func download(url, savePath string) error {
 	if err := cmd.Wait(); err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func (m *mission) start() error {
+func (m *mission) start() {
 	id, _ := uuid.NewV4()
 	tempPath := "/tmp/" + id.String()
 
-	err := download(m.url, tempPath)
-	if err != nil {
-		return err
-	}
+	go func() {
+		m.err = download(m.url, tempPath)
+		if m.err == nil {
+			m.err = moveFile(tempPath, m.filePath)
+		}
+		close(m.end)
+	}()
+}
 
-	return moveFile(tempPath, m.filePath)
+func (m *mission) wait() error {
+	<-m.end
+	return m.err
 }
 
 func moveFile(oldPath, newPath string) error {
