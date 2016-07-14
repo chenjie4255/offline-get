@@ -8,11 +8,8 @@ import (
 	"github.com/chenjie4255/offline-get/downloader"
 )
 
-func main() {
+func createMainEngine(mgr downloader.DownloadMgr) *gin.Engine {
 	engine := gin.Default()
-
-	dlMgr := downloader.NewDownloadMgr("/tmp/")
-
 	engine.POST("/mission", func(c *gin.Context) {
 		c.Request.ParseForm()
 		url := c.Request.PostForm.Get("url")
@@ -24,7 +21,7 @@ func main() {
 			return
 		}
 
-		missionID, err := dlMgr.AddMission(url)
+		missionID, err := mgr.AddMission(url)
 		if err != nil {
 			ret["error"] = err.Error()
 			ret["mission_id"] = 0
@@ -39,5 +36,11 @@ func main() {
 
 	engine.Static("/offline_file/", "/tmp/")
 
+	return engine
+}
+
+func main() {
+	dlMgr := downloader.NewDownloadMgr("/tmp/")
+	engine := createMainEngine(dlMgr)
 	engine.Run(":5821")
 }

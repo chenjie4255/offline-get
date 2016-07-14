@@ -31,7 +31,6 @@ func (d *downloadMgr) AddMission(url string) (int64, error) {
 	dlInfo := &downloadInfo{filename, mission}
 	id := atomic.AddInt64(&d.maxID, 1)
 	d.fileMap[id] = dlInfo
-	d.maxID++
 
 	return id, nil
 }
