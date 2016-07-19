@@ -5,3 +5,4 @@ import:
   - downloader
 - package: github.com/gin-gonic/gin
 - package: github.com/nu7hatch/gouuid
+- package: github.com/smartystreets/goconvey
