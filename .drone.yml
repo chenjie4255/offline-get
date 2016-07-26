@@ -1,0 +1,8 @@
+build:
+  image:golang:1.6
+  commands: 
+    - curl https://glide.sh/get | sh
+    - glide install
+    - cd server
+    - go test
+    - go build
